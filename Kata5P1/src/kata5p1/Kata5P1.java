@@ -10,6 +10,7 @@ public class Kata5P1 {
     public static void main(String[] args) {
         Connection connection = connect();
         selectAll(connection);
+        createTableEmaeil(connection);
         closeConnection(connection);
     }
 
@@ -44,6 +45,17 @@ public class Kata5P1 {
             System.out.println("Conexión a SQLite cerrada");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
+        }
+    }
+
+    private static void createTableEmaeil(Connection connection) {
+        try {
+            connection.createStatement().execute("CREATE TABLE IF NOT EXISTS"
+                    + " EMAIL(Id INTEGER PRIMARY KEY AUTOINCREMENT, Mail TEXT"
+                    + " NOT NULL);");
+            System.out.println("Tabla creada con éxito");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 }
