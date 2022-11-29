@@ -1,17 +1,27 @@
 package kata5p1;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.ResultSet;
+import java.util.List;
 
 public class Kata5P1 {
 
     public static void main(String[] args) {
+        Loader loader = new EmailLoader(new FileLoader(new File("email.txt")));
+        List<String> emails = loader.load();
+        
+        InsertIntoTable insertIntoTable = new InsertIntoTable();
+        
         Connection connection = connect();
-        selectAll(connection);
-        createTableEmaeil(connection);
+        createTableEmail(connection);
         closeConnection(connection);
+        
+        for (String email : emails) {
+            insertIntoTable.insert(email);
+        }
+        insertIntoTable.closeConnection();
     }
 
     private static Connection connect() {
@@ -25,20 +35,6 @@ public class Kata5P1 {
         return connection;
     }
 
-    private static void selectAll(Connection connection) {
-        try {
-            ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM PEOPLE");
-            while (rs.next()) {
-                System.out.println(rs.getInt("id") + "\t" + 
-                                   rs.getString("Nombre") + "\t" +
-                                   rs.getString("Apellidos") + "\t" +
-                                   rs.getString("Departamento") + "\t");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     private static void closeConnection(Connection connection) {
         try {
             if (connection != null) connection.close();
@@ -48,7 +44,7 @@ public class Kata5P1 {
         }
     }
 
-    private static void createTableEmaeil(Connection connection) {
+    private static void createTableEmail(Connection connection) {
         try {
             connection.createStatement().execute("CREATE TABLE IF NOT EXISTS"
                     + " EMAIL(Id INTEGER PRIMARY KEY AUTOINCREMENT, Mail TEXT"
